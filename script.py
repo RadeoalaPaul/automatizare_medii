@@ -18,6 +18,7 @@ tip_activitate = 0
 rand_disciplina = 0
 indice_max = 0
 label_status = None
+predefinit = False
 
 def activitate(tip):
    global tip_activitate
@@ -30,7 +31,7 @@ def disciplina(numar):
 
 def actualizare(a, d, n): #a - activitate, d - tip disciplina
 
-   global letterS, letterM, indice_max
+   global indice_max
 
    actualizat = False
    randuri = []
@@ -78,14 +79,18 @@ def actualizare(a, d, n): #a - activitate, d - tip disciplina
    workbook.save("mediii.xlsx")
    
 def trimite_email(text):
+   global predefinit
    email = re.match(r"^\S+@\S+\.\S+$",text) #functional
-   if(email==None):
+   if(email==None and not predefinit):
       label_status.setText("Status: E-mail invalid!")
    else:
       label_status.setText("Status: Fisier trimis cu succes!")
 
       sender_email = "radeoalapaul34@gmail.com"
-      receiver_email = text
+      if(predefinit):
+         receiver_email = "paul.radeoala@student.upt.ro"
+      else:
+         receiver_email = text
       password = "took gvgb gzoo cdie"
       server = "smtp.gmail.com"
       subject = "Medii actualizate facultate"
@@ -118,6 +123,8 @@ def trimite_email(text):
             print("E-mail trimis cu succes!")
       except Exception as e:
          print(f"Eroare: {e}")
+   if(predefinit):
+      predefinit = False
 
 class MainWindow(QDialog):
    def __init__(self):
@@ -187,23 +194,30 @@ class Afisare_Discipline(QDialog):
 
 class Afisare_Nota(QDialog):
    def __init__(self):
-      global buton_proces_widget, buton_inapoi_widget, text_email, text_nota, label_status
+      global buton_proces_widget, buton_inapoi_widget, buton_trimite_predefinit, text_email, text_nota, label_status
       super().__init__()
 
       uic.loadUi("medii_nota.ui", self)
 
       buton_inapoi_widget = self.findChild(QPushButton, "buton_inapoi")
       buton_proces_widget = self.findChild(QPushButton, "buton_proces")
+      buton_trimite_predefinit = self.findChild(QPushButton, "buton_trimite_predefinit")
       label_status = self.findChild(QLabel, "label_status")
       text_nota = self.findChild(QTextEdit,"text_nota")
       text_email = self.findChild(QTextEdit,"text_email")
 
       buton_proces_widget.clicked.connect(self.proces)
+      buton_trimite_predefinit.clicked.connect(self.trimite_predefinit)
       buton_inapoi_widget.clicked.connect(self.inapoi)
 
    def proces(self):
       actualizare(tip_activitate,rand_disciplina,text_nota.toPlainText())
       trimite_email(text_email.toPlainText())
+
+   def trimite_predefinit(self):
+      global predefinit
+      predefinit = True
+      trimite_email("")
 
    def inapoi(self):
       stack.setCurrentIndex(stack.currentIndex()-1)
