@@ -39,7 +39,7 @@ def actualizare(a, d, n): #a - activitate, d - tip disciplina
    medii = []
    s = 0
    workbook = load_workbook("mediii.xlsx")
-   #workbook = load_workbook("medii_copie.xlsx") #pt test
+   #workbook = load_workbook("new.xlsx") #pt test
    sheet = workbook.active
    for col in sheet.iter_rows(min_col=1,max_col=sheet.max_column,min_row=1,max_row=sheet.max_row):
       for cell in col:
